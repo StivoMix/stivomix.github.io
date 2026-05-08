@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StivoMix — Cybersecurity & AI Research</title>
+<meta name="description" content="StivoMix — self-taught cybersecurity and AI researcher. Pentesting, red teaming, AI security, homelab experiments.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS — matches the "Paper" theme from the article
+   ============================================================ */
+:root {
+  --ink:      #0a0907;
+  --paper:    #f7f4ef;
+  --cream:    #ede9e1;
+  --accent:   #c8371a;
+  --accent2:  #1a6bc8;
+  --gold:     #c9a84c;
+  --muted:    #7a746b;
+  --border:   #d4cfc7;
+  --green:    #1e8a4a;
+
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body:    'DM Sans', sans-serif;
+  --ff-mono:    'JetBrains Mono', monospace;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ff-body);
+  font-size: 18px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--ink);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 56px;
+}
+
+.nav-logo {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.nav-logo .mix { color: var(--accent); }
+
+.nav-tabs {
+  display: flex;
+  height: 56px;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: rgba(247,244,239,0.38);
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0 22px;
+  height: 100%;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-tab:hover  { color: rgba(247,244,239,0.65); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 96px 24px 108px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg,  transparent, transparent 39px, rgba(255,255,255,0.025) 39px, rgba(255,255,255,0.025) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.025) 39px, rgba(255,255,255,0.025) 40px);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.5);
+  padding: 5px 16px;
+  border-radius: 2px;
+  margin-bottom: 36px;
+  position: relative;
+}
+
+.hero-name {
+  font-family: var(--ff-display);
+  font-size: clamp(64px, 12vw, 128px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -4px;
+  position: relative;
+  margin-bottom: 28px;
+}
+.hero-name .s { color: var(--paper); }
+.hero-name .m { color: var(--accent); font-style: italic; }
+
+.hero-sub {
+  font-size: clamp(14px, 2vw, 17px);
+  color: rgba(247,244,239,0.48);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  max-width: 560px;
+  margin: 0 auto 44px;
+  position: relative;
+  line-height: 1.7;
+}
+
+.hero-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(247,244,239,0.28);
+  position: relative;
+}
+.meta-dot {
+  width: 4px; height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TICKER
+   ============================================================ */
+.ticker-bar {
+  background: var(--accent);
+  overflow: hidden;
+  padding: 13px 0;
+}
+.ticker-inner {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+  animation: tickerScroll 28s linear infinite;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #fff;
+}
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.tick-item { display: inline-flex; align-items: center; gap: 20px; padding: 0 8px; }
+.tick-sep  { opacity: 0.35; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.container      { max-width: 760px;  margin: 0 auto; padding: 0 28px; }
+.container-wide { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+/* ============================================================
+   TAB PANELS
+   ============================================================ */
+.tab-panel { display: none; }
+.tab-panel.active {
+  display: block;
+  animation: panelIn 0.28s ease;
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+
+.section-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(28px, 4.5vw, 46px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.6px;
+  margin-bottom: 28px;
+}
+h3 {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+p { margin-bottom: 22px; color: #2a2520; }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 600; }
+
+/* ============================================================
+   PULL QUOTE
+   ============================================================ */
+.pull-quote {
+  border-left: 4px solid var(--accent);
+  padding: 24px 32px;
+  margin: 52px 0;
+  background: var(--cream);
+  border-radius: 0 6px 6px 0;
+}
+.pull-quote p {
+  font-family: var(--ff-display);
+  font-size: clamp(19px, 3vw, 26px);
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ============================================================
+   LEVEL-UP COMPONENT
+   ============================================================ */
+.level-stage {
+  background: var(--ink);
+  padding: 72px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.level-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg,  transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px);
+  pointer-events: none;
+}
+
+.level-card {
+  max-width: 560px;
+  margin: 0 auto;
+  border: 1px solid rgba(201,168,76,0.28);
+  border-radius: 4px;
+  padding: 48px 40px 40px;
+  position: relative;
+  text-align: center;
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(4px);
+}
+
+/* corner accents */
+.level-card::before,
+.level-card::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--gold);
+  border-style: solid;
+  opacity: 0.5;
+}
+.level-card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.level-card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+.lv-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.lv-number {
+  font-family: var(--ff-display);
+  font-size: clamp(88px, 18vw, 140px);
+  font-weight: 900;
+  line-height: 0.88;
+  color: var(--paper);
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.lv-tag {
+  position: absolute;
+  top: 12px;
+  right: -16px;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--ink);
+  border: 1px solid var(--accent);
+  padding: 2px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+}
+
+.lv-since {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: rgba(247,244,239,0.28);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 36px;
+}
+
+.lv-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  color: rgba(247,244,239,0.28);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.lv-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+  height: 7px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.lv-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--accent));
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+
+.lv-cd-title {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(247,244,239,0.22);
+  margin-bottom: 12px;
+}
+
+.lv-countdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.cd-unit {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px;
+  padding: 14px 6px 12px;
+}
+.cd-val {
+  display: block;
+  font-family: var(--ff-display);
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 700;
+  color: var(--paper);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.cd-lbl {
+  display: block;
+  font-family: var(--ff-mono);
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(247,244,239,0.25);
+}
+
+/* ============================================================
+   SKILLS TAGS
+   ============================================================ */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 36px 0;
+}
+.sk {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--muted);
+  background: var(--cream);
+}
+.sk.hot {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(200,55,26,0.04);
+}
+.sk.cool {
+  border-color: var(--accent2);
+  color: var(--accent2);
+  background: rgba(26,107,200,0.04);
+}
+
+/* ============================================================
+   STAT ROW
+   ============================================================ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--border);
+  border: 2px solid var(--border);
+  margin: 52px 0;
+}
+.stat-box {
+  background: var(--paper);
+  padding: 32px 20px;
+  text-align: center;
+}
+.stat-num {
+  font-family: var(--ff-display);
+  font-size: clamp(40px, 6vw, 56px);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-lbl {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ============================================================
+   MISSION GRID
+   ============================================================ */
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2px;
+  background: var(--border);
+  border: 2px solid var(--border);
+  margin: 52px 0;
+}
+.mission-cell {
+  background: var(--paper);
+  padding: 36px 32px;
+}
+.cell-phase {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: block;
+}
+.mission-cell h3 { font-size: 19px; margin-bottom: 10px; }
+.mission-cell p  { font-size: 14px; color: var(--muted); line-height: 1.65; margin: 0; }
+
+/* ============================================================
+   ROADMAP
+   ============================================================ */
+.roadmap {
+  padding-left: 40px;
+  position: relative;
+  margin: 52px 0;
+}
+.roadmap::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 1px;
+  background: var(--border);
+}
+
+.rm-item {
+  position: relative;
+  padding-bottom: 40px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--cream);
+}
+.rm-item:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
+
+.rm-dot {
+  position: absolute;
+  left: -44px; top: 7px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--paper);
+  transition: box-shadow 0.3s;
+}
+.rm-item.done    .rm-dot { background: var(--green); }
+.rm-item.current .rm-dot { background: var(--accent); box-shadow: 0 0 0 4px rgba(200,55,26,0.18); }
+.rm-item.future  .rm-dot { background: var(--accent2); }
+
+.rm-phase {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+.rm-item.done    .rm-phase { color: var(--green); }
+.rm-item.current .rm-phase { color: var(--accent); }
+.rm-item.future  .rm-phase { color: var(--accent2); }
+
+.rm-title {
+  font-family: var(--ff-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.rm-desc { font-size: 15px; color: var(--muted); line-height: 1.65; margin: 0; }
+
+/* ============================================================
+   PROJECT CARDS
+   ============================================================ */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 52px;
+}
+
+.proj-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, transform 0.25s;
+}
+.proj-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+
+.proj-head {
+  background: var(--ink);
+  padding: 36px 32px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.proj-head::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 19px,
+    rgba(255,255,255,0.02) 19px, rgba(255,255,255,0.02) 20px
+  );
+}
+
+.proj-cat {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  position: relative;
+}
+.proj-title {
+  font-family: var(--ff-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--paper);
+  line-height: 1.2;
+  position: relative;
+}
+
+.proj-body { padding: 32px; flex: 1; display: flex; flex-direction: column; }
+.proj-desc {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 8px;
+}
+.proj-desc:last-of-type { margin-bottom: 28px; }
+
+.proj-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.proj-tag {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--muted);
+}
+
+.proj-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  padding: 11px 20px;
+  border-radius: 2px;
+  transition: background 0.2s, color 0.2s;
+  margin-top: auto;
+  align-self: flex-start;
+}
+.proj-link:hover { background: var(--accent); color: #fff; }
+.proj-link svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+/* ============================================================
+   BLOG
+   ============================================================ */
+.blog-list { margin-top: 52px; display: flex; flex-direction: column; gap: 20px; }
+
+.b-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.b-card.featured { border-color: rgba(201,168,76,0.4); }
+.b-card.clickable { cursor: pointer; }
+.b-card.clickable:hover { border-color: var(--accent2); transform: translateY(-2px); }
+.b-card.featured.clickable:hover { border-color: var(--gold); }
+
+.b-inner { display: flex; }
+
+.b-stripe {
+  width: 4px;
+  flex-shrink: 0;
+  background: var(--muted);
+}
+.b-card.featured  .b-stripe { background: var(--gold); }
+.b-card.clickable .b-stripe { background: var(--accent); }
+
+.b-content { padding: 28px 32px; flex: 1; }
+
+.b-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.b-badge {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 2px;
+  border: 1px solid rgba(200,55,26,0.3);
+  color: var(--accent);
+}
+.b-card.featured .b-badge { color: var(--gold); border-color: rgba(201,168,76,0.4); }
+.b-card.dim .b-badge { color: var(--muted); border-color: rgba(122,116,107,0.3); }
+
+.b-date { font-family: var(--ff-mono); font-size: 10px; color: var(--muted); }
+
+.b-title {
+  font-family: var(--ff-display);
+  font-size: clamp(18px, 3vw, 24px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+.b-excerpt {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.b-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  text-decoration: none;
+  transition: gap 0.2s, color 0.2s;
+}
+.b-read:hover { gap: 10px; color: var(--accent); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.site-footer {
+  background: var(--ink);
+  color: rgba(247,244,239,0.3);
+  padding: 56px 28px;
+  text-align: center;
+}
+.footer-logo {
+  font-family: var(--ff-display);
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--paper);
+  margin-bottom: 6px;
+}
+.footer-logo em { color: var(--accent); font-style: italic; }
+
+.footer-tagline {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(247,244,239,0.25);
+  margin-bottom: 28px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.footer-link {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(247,244,239,0.3);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: var(--gold); }
+
+.footer-copy {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: rgba(247,244,239,0.18);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .hero { padding: 72px 16px 84px; }
+  .hero-name { letter-spacing: -2px; }
+
+  .nav-tab { padding: 0 14px; font-size: 9px; letter-spacing: 0.1em; }
+  .site-nav { padding: 0 16px; }
+
+  .level-card { padding: 36px 20px 32px; }
+  .lv-tag { right: -8px; font-size: 9px; }
+
+  .lv-countdown { gap: 6px; }
+  .cd-val { font-size: 20px; }
+
+  .mission-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: 1fr; }
+
+  .b-inner { flex-direction: column; }
+  .b-stripe { width: 100%; height: 4px; }
+  .b-content { padding: 20px; }
+
+  .pull-quote { padding: 18px 20px; }
+  .roadmap { padding-left: 28px; }
+  .rm-dot { left: -32px; }
+}
+
+@media (max-width: 400px) {
+  .lv-countdown { grid-template-columns: repeat(2, 1fr); }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav class="site-nav" role="navigation">
+  <a class="nav-logo" href="#">Stivo<span class="mix">Mix</span></a>
+  <div class="nav-tabs" role="tablist">
+    <button class="nav-tab active" data-tab="home"     role="tab" aria-selected="true">About</button>
+    <button class="nav-tab"        data-tab="projects" role="tab" aria-selected="false">Projects</button>
+    <button class="nav-tab"        data-tab="blog"     role="tab" aria-selected="false">Blog</button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO — shown on all tabs
+     ============================================================ -->
+<header class="hero">
+  <div class="hero-eyebrow">StivoMix.github.io</div>
+  <div class="hero-name">
+    <span class="s">Stivo</span><span class="m">Mix</span>
+  </div>
+  <p class="hero-sub">Cybersecurity &amp; AI Enthusiast</p>
+</header>
+
+<!-- TICKER -->
+<div class="ticker-bar" aria-hidden="true">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- ============================================================
+     MAIN
+     ============================================================ -->
+<main>
+
+  <!-- ══════════════════════════════════════════════════════════
+       HOME / ABOUT TAB
+       ══════════════════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-home" role="tabpanel">
+
+    <!-- LEVEL UP COMPONENT -->
+    <div class="level-stage">
+      <div class="level-card">
+        <div class="lv-eyebrow">// Current Level</div>
+
+        <div class="lv-number" style="position:relative; display:inline-block;">
+          <span id="lv-age">—</span>
+        </div>
+
+        <div class="lv-since">years old</div>
+
+        <div class="lv-progress-labels">
+          <span>Level <span id="lv-cur">—</span></span>
+          <span id="lv-pct-label">—% complete</span>
+          <span>Level <span id="lv-nxt">—</span></span>
+        </div>
+        <div class="lv-track">
+          <div class="lv-fill" id="lv-fill" style="width:0%"></div>
+        </div>
+
+        <div class="lv-cd-title">Time to next Level Up</div>
+        <div class="lv-countdown">
+          <div class="cd-unit"><span class="cd-val" id="cd-d">—</span><span class="cd-lbl">Days</span></div>
+          <div class="cd-unit"><span class="cd-val" id="cd-h">—</span><span class="cd-lbl">Hours</span></div>
+          <div class="cd-unit"><span class="cd-val" id="cd-m">—</span><span class="cd-lbl">Mins</span></div>
+          <div class="cd-unit"><span class="cd-val" id="cd-s">—</span><span class="cd-lbl">Secs</span></div>
+        </div>
+      </div>
+    </div><!-- /level-stage -->
+
+    <!-- ORIGIN STORY -->
+    <div class="section">
+      <div class="container">
+        <div class="section-label">Origin Story</div>
+        <h2>A little background...</h2>
+
+        <p>I'm <strong>StivoMix</strong> - a high schooler based in Israel who got pulled into cybersecurity at age 11, a journey made possible by early English proficiency, a good internet connection, and the support of some incredible people.</p>
+        <p>5-6 years of self-directed learning later, i've built skills in cybersecurity, studied AI, written real tools, solved CTFs, and started publishing research. This site is the living record of that work, and the roadmap of everything still ahead. Some of the favorite skills of mine that i've built throughout the years and still improving and studying are:</p>
+
+        <div class="skill-tags">
+          <span class="sk hot">Penetration Testing</span>
+          <span class="sk hot">AI Security</span>
+          <span class="sk hot">Red Teaming</span>
+          <span class="sk cool">LLM Research</span>
+          <span class="sk">Networking</span>
+          <span class="sk">Malware Analysis</span>
+          <span class="sk">CTF Solving</span>
+          <span class="sk">Linux</span>
+          <span class="sk">Python \ Bash \ C/C++ \ TypeScript</span>
+          <span class="sk">Docker</span>
+          <span class="sk">OSINT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="section" style="padding: 0;">
+      <div class="container">
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent);">5+</div>
+            <div class="stat-lbl">years self taught</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent2);">250+</div>
+            <div class="stat-lbl">days of sleep debt</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--gold);">∞</div>
+            <div class="stat-lbl">things left to break</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CURRENT FOCUS -->
+    <div class="section">
+      <div class="container">
+        <div class="section-label">Current Focus</div>
+        <h2>Cybersecurity in the AI era</h2>
+
+        <p>Right now I'm running two parallel tracks: <strong>offensive security</strong> and <strong>AI research</strong>. On the offensive side, I'm working toward the OSCP while learning and practicing almost-daily.</p>
+        <p>On the AI front, I study how large language models work and how large language models fail: prompt injection, jailbreak patterns, data poisoning, and emergent adversarial behavior. My first published research put 100 AI models through a structured political questionnaire and mapped every answer onto the Political Compass. The results were more interesting than I expected.</p>
+
+        <div class="mission-grid">
+          <div class="mission-cell">
+            <span class="cell-phase">// Right Now</span>
+            <h3>High School</h3>
+            <p>Currently studying in highschool, majoring in physics and software engineering. Focusing very well on studies while dedicating my after-school hours to projects and self directed learning.</p>
+          </div>
+          <div class="mission-cell">
+            <span class="cell-phase">// Certifications</span>
+            <h3>Road to OSCP</h3>
+            <p>Working through HackTheBox, TryHackMe, and projects. The Offensive Security Certified Professional is the first major target on my roadmap.</p>
+          </div>
+          <div class="mission-cell">
+            <span class="cell-phase">// After graduation</span>
+            <h3>Military Service</h3>
+            <p>Planning mandatory service in a cyber offensive unit, to serve my nation and contribute the best i can out of myself before moving to a private career.</p>
+          </div>
+          <div class="mission-cell">
+            <span class="cell-phase">// Career Goal</span>
+            <h3>Red Teamer / AI Security Specialist</h3>
+            <p>Helping organizations discover their critical exposures before real threat actors do, that's the mission.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROADMAP -->
+    <div class="section">
+      <div class="container">
+        <div class="section-label">Roadmap</div>
+        <h2>The Plan, In Writing.</h2>
+
+        <div class="roadmap">
+
+          <div class="rm-item done">
+            <div class="rm-dot"></div>
+            <div class="rm-phase">// Completed</div>
+            <div class="rm-title">Foundational Self-Education</div>
+            <p class="rm-desc">5+ years of independent study in networking, operating systems, scripting, and security concepts.</p>
+          </div>
+
+          <div class="rm-item done">
+            <div class="rm-dot"></div>
+            <div class="rm-phase">// Completed</div>
+            <div class="rm-title">Build the Homelab</div>
+            <p class="rm-desc">Deployed a Proxmox and Docker-based self hosted AI environment. Planning upgrades in the future and using this project to study and understand AI and servers better.</p>
+          </div>
+
+          <div class="rm-item done">
+            <div class="rm-dot"></div>
+            <div class="rm-phase">// Completed</div>
+            <div class="rm-title">First Published Research</div>
+            <p class="rm-desc">Tested 100 AI models on political questions, analyzed 10,000 answers, and published the findings. The first real piece of public research work which im very proud of🔥 (go check it out).</p>
+          </div>
+
+          <div class="rm-item current">
+            <div class="rm-dot"></div>
+            <div class="rm-phase">// In Progress</div>
+            <div class="rm-title">Active Lab Practice + Research</div>
+            <p class="rm-desc">Learning new security concepts, solving CTF challenges, studying AI, and publishing findings on this site (whenever so).</p>
+          </div>
+
+          <div class="rm-item future">
+            <div class="rm-dot"></div>
+            <div class="rm-phase">// Target</div>
+            <div class="rm-title">OSCP Certification</div>
+            <p class="rm-desc">Offensive Security Certified Professional, the gold standard for practical, hands-on penetration testing skills. One of my main goals for the future.</p>
+          </div>
+
+          <div class="rm-item future">
+            <div class="rm-dot"></div>
+            <div class="rm-phase">// Planned</div>
+            <div class="rm-title">Military Service</div>
+            <p class="rm-desc">Mandatory service applied in a cyber offensive unit (God willing). Applying my year-long earned skills at a national scale would be a big milestone in my career.</p>
+          </div>
+
+          <div class="rm-item future">
+            <div class="rm-dot"></div>
+            <div class="rm-phase">// End Goal</div>
+            <div class="rm-title">Red Team Career</div>
+            <p class="rm-desc">The finish line, at least for now.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-home -->
+
+  <!-- ══════════════════════════════════════════════════════════
+       PROJECTS TAB
+       ══════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-projects" role="tabpanel">
+    <div class="section">
+      <div class="container">
+        <div class="section-label">Open Source Work</div>
+        <h2>The good stuff.</h2>
+        <p>These are real, working projects, accessible to the broad community. Code is open, feedback is welcome, issues are appreciated.</p>
+      </div>
+
+      <div class="container-wide">
+        <div class="projects-grid">
+
+          <!-- HOMELAB -->
+          <div class="proj-card">
+            <div class="proj-head">
+              <div class="proj-cat">// Home server and AI workspace</div>
+              <div class="proj-title">Stivo's Homelab</div>
+            </div>
+            <div class="proj-body">
+              <p class="proj-desc">A <strong>Proxmox and Docker-based</strong> AI environment, built to enhance my practical experience with networking, server management, and AI.</p>
+              <div class="proj-stack">
+                <span class="proj-tag">Proxmox VE</span>
+                <span class="proj-tag">Docker</span>
+                <span class="proj-tag">Ollama</span>
+                <span class="proj-tag">OpenWebUI</span>
+                <span class="proj-tag">Traefik</span>
+                <span class="proj-tag">Authentik</span>
+              </div>
+              <a class="proj-link" href="https://github.com/StivoMix/stivos-homelab" target="_blank" rel="noopener noreferrer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                View on GitHub
+              </a>
+            </div>
+          </div>
+
+          <!-- ROMIX AGENT STUDIO -->
+          <div class="proj-card">
+            <div class="proj-head">
+              <div class="proj-cat">// AI in Game Development</div>
+              <div class="proj-title">Romix Agent Studio</div>
+            </div>
+            <div class="proj-body">
+              <p class="proj-desc">An <strong>AI-integrated agent tool</strong> for Roblox Studio (and maybe more game development studios as the tool develops) bringing autonomous, LLM-powered workflows into game development. A development co-pilot that generates, modifies, and debugs game logic.</p>
+              <p class="proj-desc">Combines AI agent architecture with Roblox Studio's scripting and building environment to automate repetitive tasks, suggest improvements, and help creators build more sophisticated experiences without the boilerplate.</p>
+              <div class="proj-stack">
+                <span class="proj-tag">LLM APIs</span>
+                <span class="proj-tag">Lua / Luau</span>
+                <span class="proj-tag">Game Development</span>
+                <span class="proj-tag">Agent Architecture</span>
+                <span class="proj-tag">TypeScript</span>
+                <span class="proj-tag">REST APIs</span>
+              </div>
+              <a class="proj-link" href="https://github.com/StivoMix/romix-agent-studio" target="_blank" rel="noopener noreferrer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                View on GitHub
+              </a>
+            </div>
+          </div>
+
+        </div><!-- /projects-grid -->
+      </div>
+    </div>
+  </div><!-- /tab-projects -->
+
+  <!-- ══════════════════════════════════════════════════════════
+       BLOG TAB
+       ══════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-blog" role="tabpanel">
+    <div class="section">
+      <div class="container">
+        <div class="section-label">Research &amp; Writing</div>
+        <h2>The blog.</h2>
+        <p>Findings from research, lab experiments, and AI investigations. Written for people who want to learn interesting things in depth.</p>
+
+        <div class="blog-list">
+
+          <!-- ARTICLE 1 — FEATURED & LIVE -->
+          <div class="b-card featured clickable" onclick="window.location.href='ai_political_bias_article.html'">
+            <div class="b-inner">
+              <div class="b-stripe"></div>
+              <div class="b-content">
+                <div class="b-top">
+                  <span class="b-badge">Featured · AI Research</span>
+                  <span class="b-date">2026 &nbsp;— Research Study</span>
+                </div>
+                <div class="b-title">I Made 100 AI Models Answer Political Questions and the Results Are Wild</div>
+                <p class="b-excerpt">I ran 100 large language models through a structured political questionnaire, mapping every single response onto the Political Compass. The results: 52 models landed left-libertarian, only 2 went right-libertarian, and xAI's family was the sole consistently right-leaning group. With 10,000 answers analyzed, the data tells a story about who builds these systems and what they inevitably encode into them.</p>
+                <a class="b-read" href="ai_political_bias_article.html">Read Full Article →</a>
+              </div>
+            </div>
+          </div>
+        </div><!-- /blog-list -->
+      </div>
+    </div>
+  </div><!-- /tab-blog -->
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="site-footer">
+  <div class="footer-logo">Stivo<em>Mix</em></div>
+  <div class="footer-tagline">Cybersecurity &amp; AI Research · Israel</div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://github.com/StivoMix" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a class="footer-link" href="https://github.com/StivoMix/stivos-homelab" target="_blank" rel="noopener noreferrer">Homelab</a>
+    <a class="footer-link" href="https://github.com/StivoMix/romix-agent-studio" target="_blank" rel="noopener noreferrer">Romix Studio</a>
+    <a class="footer-link" href="ai_political_bias_article.html">Featured Research</a>
+  </div>
+  <div class="footer-copy">© <span id="yr"></span> StivoMix</div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+'use strict';
+
+/* --------------------------------------------------
+   TAB NAVIGATION
+   -------------------------------------------------- */
+(function () {
+  const tabs   = document.querySelectorAll('.nav-tab');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      panels.forEach(function (p) { p.classList.remove('active'); });
+
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+})();
+
+/* --------------------------------------------------
+   LEVEL UP COMPONENT
+   Born: December 23, 2009
+   -------------------------------------------------- */
+(function () {
+  var BIRTH_MONTH = 11; // 0-indexed — December
+  var BIRTH_DAY   = 23;
+  var BIRTH_YEAR  = 2009;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function compute() {
+    var now  = new Date();
+    var yr   = now.getFullYear();
+
+    var thisYearBday = new Date(yr, BIRTH_MONTH, BIRTH_DAY);
+    var hadBday      = thisYearBday <= now;
+
+    var age          = hadBday ? yr - BIRTH_YEAR : yr - BIRTH_YEAR - 1;
+    var lastBday     = hadBday ? thisYearBday : new Date(yr - 1, BIRTH_MONTH, BIRTH_DAY);
+    var nextBday     = hadBday ? new Date(yr + 1, BIRTH_MONTH, BIRTH_DAY) : thisYearBday;
+
+    var totalMs      = nextBday - lastBday;
+    var elapsedMs    = now - lastBday;
+    var pct          = Math.min(elapsedMs / totalMs * 100, 100);
+
+    var remaining    = nextBday - now;
+    var days         = Math.floor(remaining / 864e5);
+    var hours        = Math.floor(remaining % 864e5 / 36e5);
+    var mins         = Math.floor(remaining % 36e5  / 6e4);
+    var secs         = Math.floor(remaining % 6e4   / 1e3);
+
+    return { age: age, pct: pct, days: days, hours: hours, mins: mins, secs: secs };
+  }
+
+  function update() {
+    var d = compute();
+    var nextLevel = d.age + 1;
+
+    document.getElementById('lv-age').textContent       = d.age;
+    document.getElementById('lv-cur').textContent       = d.age;
+    document.getElementById('lv-nxt').textContent       = nextLevel;
+    document.getElementById('lv-pct-label').textContent = d.pct.toFixed(1) + '% complete';
+    document.getElementById('lv-fill').style.width      = d.pct.toFixed(2) + '%';
+
+    document.getElementById('cd-d').textContent = pad(d.days);
+    document.getElementById('cd-h').textContent = pad(d.hours);
+    document.getElementById('cd-m').textContent = pad(d.mins);
+    document.getElementById('cd-s').textContent = pad(d.secs);
+  }
+
+  update();
+  setInterval(update, 1000);
+})();
+
+/* --------------------------------------------------
+   TICKER
+   -------------------------------------------------- */
+(function () {
+  var items = [
+    'asd',
+    '"Talk is cheap. Show me the code." - Linus Torvalds',
+    'Sponsored by Claude',
+    'Why "StivoMix"? good question, im not sure',
+    'Fun fact: I burned 56k tokens for this UI',
+    'Yo gemini document this for me'
+  ];
+
+  var html = items
+    .map(function (t) {
+      return '<span class="tick-item">' + t + ' <span class="tick-sep">///</span></span>';
+    })
+    .join('');
+
+  var el = document.getElementById('ticker');
+  el.innerHTML = html + html; // duplicate for seamless loop
+})();
+
+/* --------------------------------------------------
+   FOOTER YEAR
+   -------------------------------------------------- */
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+</script>
+</body>
+</html>
