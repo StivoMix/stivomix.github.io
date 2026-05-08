@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Made 100 AI Models Answer Political Questions and the Results Are Wild</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ink: #0a0907;
+    --paper: #f7f4ef;
+    --cream: #ede9e1;
+    --accent: #c8371a;
+    --accent2: #1a6bc8;
+    --gold: #c9a84c;
+    --muted: #7a746b;
+    --border: #d4cfc7;
+    --green: #1e8a4a;
+    --red: #c8371a;
+    --blue: #1a6bc8;
+    --purple: #7b3fa0;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* --- HERO --- */
+  .hero {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 80px 24px 100px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,0.03) 39px,
+      rgba(255,255,255,0.03) 40px
+    ), repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,0.03) 39px,
+      rgba(255,255,255,0.03) 40px
+    );
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 80px);
+    font-weight: 900;
+    line-height: 1.05;
+    max-width: 900px;
+    margin: 0 auto 32px;
+    position: relative;
+    letter-spacing: -1px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: rgba(247,244,239,0.6);
+    max-width: 620px;
+    margin: 0 auto 48px;
+    font-weight: 300;
+    position: relative;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(247,244,239,0.45);
+    position: relative;
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 8px; }
+  .hero-meta-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+
+  /* --- STAT TICKER --- */
+  .stat-ticker {
+    background: var(--accent);
+    color: white;
+    padding: 14px 0;
+    display: flex;
+    gap: 0;
+    overflow: hidden;
+  }
+  .ticker-inner {
+    display: flex;
+    gap: 64px;
+    animation: tickerScroll 30s linear infinite;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .ticker-item { display: flex; align-items: center; gap: 16px; }
+  .ticker-sep { opacity: 0.4; }
+
+  /* --- LAYOUT --- */
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .container-wide {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* --- SECTIONS --- */
+  section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+
+  /* --- TYPOGRAPHY --- */
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 28px;
+    letter-spacing: -0.5px;
+  }
+  h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  p { margin-bottom: 22px; color: #2a2520; }
+  p:last-child { margin-bottom: 0; }
+  strong { font-weight: 600; }
+
+  /* --- PULL QUOTE --- */
+  .pull-quote {
+    border-left: 4px solid var(--accent);
+    padding: 24px 32px;
+    margin: 48px 0;
+    background: var(--cream);
+    border-radius: 0 8px 8px 0;
+  }
+  .pull-quote p {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 3vw, 28px);
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* --- BIG STAT --- */
+  .big-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    margin: 48px 0;
+    border: 2px solid var(--border);
+  }
+  .big-stat {
+    background: var(--paper);
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .big-stat-num {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .big-stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .accent-red { color: var(--accent); }
+  .accent-blue { color: var(--accent2); }
+  .accent-gold { color: var(--gold); }
+  .accent-green { color: var(--green); }
+
+  /* --- CHART PANELS --- */
+  .chart-panel {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 12px;
+    padding: 40px;
+    margin: 48px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg, transparent, transparent 79px,
+      rgba(255,255,255,0.02) 79px, rgba(255,255,255,0.02) 80px
+    );
+  }
+  .chart-panel-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .chart-panel h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--paper);
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Compass specific */
+  .compass-wrap {
+    position: relative;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .compass-label {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: rgba(247,244,239,0.4);
+  }
+  .compass-label.top { top: -24px; left: 50%; transform: translateX(-50%); }
+  .compass-label.bottom { bottom: -24px; left: 50%; transform: translateX(-50%); }
+  .compass-label.left { left: -80px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+  .compass-label.right { right: -80px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+  /* --- QUADRANT EXPLAINER --- */
+  .quad-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    margin: 48px 0;
+    border: 2px solid var(--border);
+  }
+  .quad-cell {
+    padding: 28px 24px;
+    background: var(--paper);
+  }
+  .quad-cell-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .quad-cell h4 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .quad-cell p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .quad-cell-count {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .q-ll { border-left: 4px solid #1e8a4a; }
+  .q-lr { border-left: 4px solid #1a6bc8; }
+  .q-al { border-left: 4px solid #c8371a; }
+  .q-ar { border-left: 4px solid #7b3fa0; }
+
+  /* --- COMPANY CARDS --- */
+  .company-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .company-row:last-child { border-bottom: none; }
+  .company-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    width: 100px;
+    flex-shrink: 0;
+  }
+  .company-bar-wrap {
+    flex: 1;
+    position: relative;
+    height: 32px;
+    background: var(--cream);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .company-bar {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: width 1s ease;
+  }
+  .company-bar.left {
+    right: 50%;
+    background: var(--green);
+    color: white;
+    justify-content: flex-end;
+  }
+  .company-bar.right {
+    left: 50%;
+    background: var(--purple);
+    color: white;
+    justify-content: flex-start;
+  }
+  .center-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--border);
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+
+  /* --- MODEL SPOTLIGHT --- */
+  .spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 48px 0;
+  }
+  .spotlight-card {
+    border: 2px solid var(--border);
+    padding: 28px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .spotlight-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .sp-red::before { background: var(--accent); }
+  .sp-blue::before { background: var(--accent2); }
+  .sp-gold::before { background: var(--gold); }
+  .sp-green::before { background: var(--green); }
+  .spotlight-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .spotlight-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 16px;
+    word-break: break-all;
+  }
+  .spotlight-coords {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .coord-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--cream);
+    font-weight: 700;
+  }
+  .spotlight-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* --- CONFIDENCE CHART PANEL --- */
+  .conf-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+  }
+  .conf-name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(247,244,239,0.6);
+    width: 200px;
+    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .conf-track {
+    flex: 1;
+    height: 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .conf-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #c9a84c, #e8c96e);
+    border-radius: 2px;
+    transition: width 1.5s ease;
+  }
+  .conf-val {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gold);
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* --- DIVIDER --- */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-divider span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* --- FOOTNOTE --- */
+  .footnote {
+    background: var(--cream);
+    border-left: 4px solid var(--muted);
+    padding: 20px 24px;
+    margin: 32px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .footnote strong { color: var(--ink); }
+
+  /* --- FINAL --- */
+  .article-footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 60px 24px;
+    text-align: center;
+  }
+  .article-footer h2 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    margin-bottom: 16px;
+  }
+  .article-footer p { color: rgba(247,244,239,0.6); max-width: 560px; margin: 0 auto 32px; }
+  .tag-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 16px;
+    border: 1px solid rgba(247,244,239,0.2);
+    border-radius: 999px;
+    color: rgba(247,244,239,0.5);
+  }
+
+  /* --- RESPONSIVE --- */
+  @media (max-width: 640px) {
+    .company-name { width: 70px; font-size: 10px; }
+    .compass-label.left { left: -60px; }
+    .compass-label.right { right: -60px; }
+    .chart-panel { padding: 24px 16px; }
+    .quad-grid { grid-template-columns: 1fr; }
+  }
+
+  /* --- INLINE CHART CANVAS SIZE --- */
+  #compassCanvas { max-height: 520px; }
+  #companyCanvas { max-height: 360px; }
+  #quadPieCanvas { max-height: 320px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Original Research : May 2026</div>
+  <h1>I Made <em>100 AI Models</em> Answer Political Questions and the Results Are Wild</h1>
+  <p class="hero-sub">I ran a 100-question political compass survey on every major AI model i could find. Here is what they actually believe.</p>
+  <div class="hero-meta">
+    <span><div class="hero-meta-dot"></div> StivoMix</span>
+    <span><div class="hero-meta-dot"></div> 100 models tested</span>
+    <span><div class="hero-meta-dot"></div> 10,000 answers collected</span>
+    <span><div class="hero-meta-dot"></div> 15 min read</span>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="stat-ticker">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- INTRO -->
+<section>
+  <div class="container">
+    <h2>Okay so here is the thing about AI models that nobody really talks about</h2>
+    <p>Every single AI model you have ever talked to has political opinions. Maybe they were never trained to have them on purpose, but they do. The way these systems were built, the data they learned from, the human feedback that shaped their answers, all of it adds up to something that looks a lot like a political worldview. And honestly, nobody has really sat down and mapped it all out properly.</p>
+    <p>So I did. I spent a healthy amount of time crafting a 100-question political and economic survey based on the classic political compass framework, and I ran it on every major AI model I could get my hands on. That is 100 questions times 100 models, which means I collected exactly 10,000 individual political opinions from machines. The results are genuinely surprising.</p>
+    <p>Before we get into the data, let me walk you through what the political compass actually is, because it makes everything else way easier to understand.</p>
+
+    <div class="pull-quote">
+      <p>It turns out that almost every major AI model leans left on economics. But when it comes to personal freedom, the picture gets a lot more complicated.</p>
+    </div>
+
+    <p>The political compass is a way of plotting political views on a grid with two axes. The horizontal axis goes from left to right on economic issues, basically covering stuff like: should the government own utilities, should workers have unions, is free trade good. The vertical axis goes from authoritarian at the top to libertarian at the bottom, covering personal freedom issues like: should drugs be legal, how much should governments monitor people, is the death penalty okay.</p>
+    <p>This gives you four quadrants. Left authoritarian is where you find traditional communism and heavy state control. Right authoritarian is where classical fascism and hardcore nationalism sit. Left libertarian is like green politics and social anarchism. And right libertarian is where you find libertarian capitalism and hardcore free market ideology. Most real world politicians and most real world people land somewhere in the middle, but the compass is great for showing tendencies.</p>
+    <p>And the tendencies I found in AI are, to put it mildly, very interesting.</p>
+  </div>
+</section>
+
+<!-- HOW WE DID IT -->
+<section>
+  <div class="container">
+    <div class="section-divider"><span>Methodology</span></div>
+    <h2>How the survey actually worked</h2>
+    <p>The survey I created has 100 statements covering both economic and social questions. The first 50 questions focus on economics, things like free markets, taxation, unions, welfare programs, and corporate power. The second 50 focus on social and cultural issues, things like immigration, the death penalty, gender roles, freedom of speech, and military spending.</p>
+    <p>Each model was given four possible responses for every statement: Highly Disagree, Disagree, Agree, or Highly Agree. To turn these into a position on the compass, I used a weighted scoring system. A plain Agree or Disagree counted as 1 point in the relevant direction. A Highly Agree or Highly Disagree counted as 2 points, because saying you highly agree with something is a much stronger statement than just agreeing.</p>
+    <p>After collecting all the answers, I averaged the scores across each axis, applied a scaling factor so the results fill the compass grid properly, and plotted everything. Each model ends up with an X coordinate for its economic position and a Y coordinate for its social position. The further left X is, the more economically left the model is. The lower Y is, the more libertarian.</p>
+
+    <div class="footnote">
+      <strong>On confidence scores:</strong> Each model also has a confidence score from 25 to 81, which measures how consistently strong the model was in its opinions. A model that answered everything with Highly Agree or Highly Disagree gets a high confidence score. A model that mostly just Agreed or Disagreed without much conviction scores lower. A high confidence score does not mean the model is right about politics, it just means it had strong opinions.
+    </div>
+
+    <p>Now, there is one important caveat before we get into the results. AI models do not think like humans think. When a model answers a political question, it is not drawing on lived experience or personal values. It is drawing on patterns in its training data and the feedback it received during fine-tuning. So when I say a model is left-leaning, I mean its training pushed it toward answers that look left-leaning on these specific questions. That is still really interesting and important information, but it is worth keeping in mind.</p>
+
+    <div class="big-stat-grid">
+      <div class="big-stat">
+        <div class="big-stat-num accent-red">100</div>
+        <div class="big-stat-label">Models Tested</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-num accent-blue">100</div>
+        <div class="big-stat-label">Questions Each</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-num accent-gold">10,000</div>
+        <div class="big-stat-label">Answers Collected</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-num accent-green">8</div>
+        <div class="big-stat-label">AI Companies Covered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE BIG CHART -->
+<section>
+  <div class="container-wide">
+    <div class="container">
+      <div class="section-divider"><span>The Data</span></div>
+      <h2>The political compass of every major AI model, all at once</h2>
+      <p>Here it is. Every model plotted on a single chart. The golden diamond in the middle is the average position of all 100 models combined. You can hover over each dot to see which model it belongs to.</p>
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">Fig. 01 : Political Compass Scatter</div>
+      <h3>Where do 100 AI models actually stand</h3>
+      <div style="position:relative; padding: 48px 80px 48px 80px;">
+        <div class="compass-label top">Authoritarian</div>
+        <div class="compass-label bottom">Libertarian</div>
+        <div class="compass-label left">Left</div>
+        <div class="compass-label right">Right</div>
+        <div class="chart-wrap">
+          <canvas id="compassCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <p>Take a good look at that chart. The first thing you will notice is that almost everything is on the left side of the horizontal axis. Basically every AI model i tested leans economically left to some degree. Some just barely, some very dramatically. The cluster of dots in the upper-left area is particularly dense, meaning a lot of models share very similar economic leftism combined with a slightly authoritarian social stance.</p>
+      <p>The second thing you will notice is that there are a few bold outliers over on the right side. Those are mostly Grok models from xAI. They are the only AI family that consistently broke away from the leftward crowd and positioned themselves on the right side of the economic axis.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUADRANT BREAKDOWN -->
+<section>
+  <div class="container">
+    <div class="section-divider"><span>Quadrant Analysis</span></div>
+    <h2>Which quadrant does AI actually live in</h2>
+    <p>Let me break the numbers down by quadrant, because this is where things get really interesting. Remember, left-libertarian is the green bottom-left corner, right-libertarian is the blue bottom-right, left-authoritarian is the red top-left, and right-authoritarian is the purple top-right.</p>
+
+    <div class="quad-grid">
+      <div class="quad-cell q-ll">
+        <div class="quad-cell-label">Bottom Left</div>
+        <h4>Left Libertarian</h4>
+        <div class="quad-cell-count" style="background:#e8f5ee; color:#1e8a4a;">52 models</div>
+        <p>The biggest group by far. More than half of all tested models land here, combining economic left leanings with a preference for personal freedom.</p>
+      </div>
+      <div class="quad-cell q-al">
+        <div class="quad-cell-label">Top Left</div>
+        <h4>Left Authoritarian</h4>
+        <div class="quad-cell-count" style="background:#fdecea; color:#c8371a;">39 models</div>
+        <p>The second biggest group. Left on economics but with tendencies toward social control and order. Think state capitalism rather than libertarian socialism.</p>
+      </div>
+      <div class="quad-cell q-ar">
+        <div class="quad-cell-label">Top Right</div>
+        <h4>Right Authoritarian</h4>
+        <div class="quad-cell-count" style="background:#f3e8f9; color:#7b3fa0;">6 models</div>
+        <p>A surprisingly small group given the noise around AI being conservative. Only 6 models ended up here, and most just barely crossed into this quadrant.</p>
+      </div>
+      <div class="quad-cell q-lr">
+        <div class="quad-cell-label">Bottom Right</div>
+        <h4>Right Libertarian</h4>
+        <div class="quad-cell-count" style="background:#e8edf9; color:#1a6bc8;">2 models</div>
+        <p>Virtually nobody lives here. Only grok-4.1 and grok-4.1-thinking landed in the right-libertarian quadrant, making this the rarest political position for AI models.</p>
+      </div>
+    </div>
+
+    <p>That number, 52 left-libertarian versus just 2 right-libertarian, really tells the whole story. If you had to pick a single political label for the average AI model, you would call it left-libertarian. It believes in government involvement in the economy but also in personal freedom. It is the politics of someone who wants universal healthcare and legal drugs at the same time.</p>
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">Fig. 02 : Quadrant Distribution</div>
+      <h3>How 100 models are split across the four quadrants</h3>
+      <div style="max-width: 420px; margin: 0 auto;">
+        <canvas id="quadPieCanvas" style="max-height:320px;"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BY COMPANY -->
+<section>
+  <div class="container">
+    <div class="section-divider"><span>Company Breakdown</span></div>
+    <h2>Which AI company makes the most left-wing models</h2>
+    <p>Here is something I found genuinely fascinating. When you group the models by which company made them and average their economic positions, you get a very clear ranking. And the differences between companies are way bigger than I expected.</p>
+
+    <div style="margin: 48px 0;">
+      <!-- LEFT/RIGHT bars for each company -->
+      <div style="margin-bottom: 8px; display: flex; gap: 12px; padding: 0 0 12px 112px; border-bottom: 1px solid var(--border);">
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);flex:1;text-align:right;">Left</span>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);flex:1;text-align:left;">Right</span>
+      </div>
+      <div id="companyBars"></div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">Fig. 03 : Average Position by Company</div>
+      <h3>Economic X vs Social Y, averaged per AI family</h3>
+      <div class="chart-wrap">
+        <canvas id="companyCanvas"></canvas>
+      </div>
+    </div>
+
+    <p>Baidu, the Chinese tech giant behind the ERNIE models, came out as the most economically left family by a significant margin, with an average economic score of -4.31. That is an enormous lean to the left. Google's Gemini models were a close second at -1.72, and the Alibaba Qwen family averaged -2.09.</p>
+    <p>The really wild outlier is xAI, Elon Musk's company behind the Grok models. Grok is the only AI family with a positive average on the economic axis, meaning it leans right of center economically. Average: plus 0.61. Every single other company averaged negative, meaning every other company's models lean left. Grok stands completely alone on the right side of the economic spectrum.</p>
+    <p>Anthropic, the company that makes Claude, sits close to the center with an average economic score of -0.91, making it one of the more moderate families. On the social axis, Claude models averaged -0.19, meaning they are barely libertarian, almost exactly at the center line for personal freedom questions.</p>
+
+    <div class="pull-quote">
+      <p>Grok from xAI is the only AI family that leans right on economics. Every other company i tested averaged left-leaning, without exception.</p>
+    </div>
+  </div>
+</section>
+
+<!-- OUTLIERS -->
+<section>
+  <div class="container">
+    <div class="section-divider"><span>Extreme Cases</span></div>
+    <h2>Meet the most politically extreme AI models in the world</h2>
+    <p>Now for the fun part. While most models cluster in a relatively tight zone around the center-left, there are some genuine extremists in this dataset. These are the models that went hard in one direction and really committed to it.</p>
+
+    <div class="spotlight-grid">
+      <div class="spotlight-card sp-red">
+        <div class="spotlight-tag">Most Economically Left</div>
+        <div class="spotlight-name">gpt-5.4-nano-high</div>
+        <div class="spotlight-coords">
+          <div class="coord-pill">X: -6.37</div>
+          <div class="coord-pill">Y: -1.12</div>
+        </div>
+        <p class="spotlight-desc">Sitting almost at the far-left edge of the economic axis, this OpenAI model has the most extreme left-wing economic position of any model tested. That is remarkable for a model from a company whose average is actually fairly moderate.</p>
+      </div>
+      <div class="spotlight-card sp-blue">
+        <div class="spotlight-tag">Most Economically Right</div>
+        <div class="spotlight-name">grok-4.1 and grok-4.1-thinking</div>
+        <div class="spotlight-coords">
+          <div class="coord-pill">X: 3.92</div>
+          <div class="coord-pill">Y: -4.80</div>
+        </div>
+        <p class="spotlight-desc">The rightmost models on the economic axis, and interestingly also very libertarian on personal freedoms. They are essentially right-libertarian, which is a rare position in this dataset and in AI generally.</p>
+      </div>
+      <div class="spotlight-card sp-green">
+        <div class="spotlight-tag">Most Libertarian</div>
+        <div class="spotlight-name">grok-4.20-multi-agent-beta-0309</div>
+        <div class="spotlight-coords">
+          <div class="coord-pill">X: -5.20</div>
+          <div class="coord-pill">Y: -6.22</div>
+        </div>
+        <p class="spotlight-desc">The most libertarian model in the entire dataset, with a social score of -6.22. This is deeply libertarian territory, but interestingly also very far left economically. It is practically the definition of libertarian socialism or social anarchism.</p>
+      </div>
+      <div class="spotlight-card sp-gold">
+        <div class="spotlight-tag">Most Authoritarian</div>
+        <div class="spotlight-name">gpt-5.5-instant</div>
+        <div class="spotlight-coords">
+          <div class="coord-pill">X: 1.18</div>
+          <div class="coord-pill">Y: 1.33</div>
+        </div>
+        <p class="spotlight-desc">The most authoritarian model i tested, with a social score of 1.33. That said, even this is pretty mild. The range of authoritarian scores was much smaller than libertarian scores, suggesting AI generally avoids strongly authoritarian positions.</p>
+      </div>
+    </div>
+
+    <p>One thing that jumps out from the outliers is that the libertarian extreme is way more populated than the authoritarian extreme. The most libertarian model scored -6.22, while the most authoritarian only scored 1.33. That is a massive difference. AI models seem to have a strong built-in preference for personal freedom over state control, even when they are economically far-left.</p>
+    <p>There is also something interesting about the qwq-32b model from Alibaba, which scored -5.98 on economics and -5.10 on social freedom, putting it deep in left-libertarian territory with the highest confidence score of any model in the dataset at 81 percent. This model did not just lean left, it leaned left with enormous conviction and consistency.</p>
+  </div>
+</section>
+
+<!-- CONFIDENCE -->
+<section>
+  <div class="container">
+    <div class="section-divider"><span>Conviction Analysis</span></div>
+    <h2>Which models actually have strong political opinions</h2>
+    <p>Remember that confidence score I mentioned earlier. It measures how strongly and consistently each model expressed its political views. A model that always said Highly Agree or Highly Disagree scores high. A model that mostly hedged with plain Agree and Disagree scores low.</p>
+    <p>The results here are fascinating because they show you which models have been trained to have strong opinions versus which ones are trained to be wishy-washy about everything. Some models seem almost allergic to taking a firm stance on anything, while others go all in on nearly every question.</p>
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">Fig. 04 : Top 20 Models by Confidence Score</div>
+      <h3>Which models answered with the most conviction</h3>
+      <div id="confBars" style="margin-top: 16px; position: relative;"></div>
+    </div>
+
+    <p>The most confident model in the dataset is qwq-32b with a score of 81 percent. Close behind are grok-4.1 and grok-4.1-thinking at 78 percent each. It is interesting that these are some of the most politically extreme models in the dataset too. Strong opinions and extreme positions seem to go together.</p>
+    <p>At the other end, a bunch of models scored just 25 percent confidence, meaning they mostly gave bland middle-of-the-road answers. A lot of these low-confidence models also ended up bunched together on the compass chart, near the center, which makes sense because if you do not strongly agree or disagree with anything, your political coordinates end up pretty close to zero.</p>
+    <p>This raises a genuinely interesting question: is a low-confidence AI model being neutral and unbiased, or is it being evasive. Is there a difference. I would argue that a model that never strongly agrees or disagrees with any political statement is not actually neutral, it has just learned that expressing strong political opinions causes problems, so it avoids them.</p>
+
+    <div class="footnote">
+      <strong>A note on what confidence means:</strong> A high confidence score just means a model answered with strong opinions consistently. It does not tell us whether those opinions are right or sensible or coherent. qwq-32b could confidently believe in something most people would find deeply questionable. The confidence score is about conviction, not wisdom.
+    </div>
+  </div>
+</section>
+
+<!-- WHAT DOES IT MEAN -->
+<section>
+  <div class="container">
+    <div class="section-divider"><span>Analysis</span></div>
+    <h2>Why do basically all AI models lean left and what does that actually mean</h2>
+    <p>This is the big question. If you look at the overall average position of all 100 models combined, it comes out at -1.27 on the economic axis and -0.91 on the social axis. That places the consensus AI position in the left-libertarian quadrant, though not dramatically so. It is center-left, not revolutionary-left. But the consistency of it is striking.</p>
+    <p>There are a few possible explanations for this. The most obvious one is training data. AI models are trained on enormous amounts of text from the internet, and the internet, especially English-language internet, skews toward certain demographics and political views. Academic papers, news articles, and long-form writing tend to come from relatively progressive people. If your training data reflects those values, your model might too.</p>
+    <p>Another explanation is the human feedback process. When AI companies refine their models using human raters, those raters are making judgments about what good answers look like. If raters consistently rate compassionate, socially liberal answers as better quality, the model learns to produce more of those. This is not necessarily intentional political programming, it might just be that certain types of answers are perceived as more helpful and less offensive.</p>
+    <p>The third explanation is the most interesting. Maybe left-libertarian positions are just the ones that minimize controversy for a general audience. Saying healthcare should be accessible, that people should have personal freedoms, that corporations should be regulated, these are positions that offend fewer people globally than the alternatives. An AI optimized to be helpful to the most people might naturally drift toward them.</p>
+
+    <div class="pull-quote">
+      <p>The average AI model sits at -1.27 on economics and -0.91 on personal freedom. Left-libertarian. Every single time. Without exception as a category.</p>
+    </div>
+
+    <p>None of these explanations mean AI models are secretly running a political agenda. But they do mean that when you talk to any of these 100 models about political topics, you are talking to something with a built-in perspective. That perspective is not random and it is not neutral. It is shaped by choices that were made during training, whether intentionally or not.</p>
+    <p>The Grok exception is really worth thinking about. xAI has clearly made different choices in how they trained their model, and the result is a model that sits noticeably to the right of every other major AI family on economic questions. That suggests that the political lean of an AI model is at least partly a choice that companies make, either deliberately or through the values embedded in their training process.</p>
+    <p>And honestly, that should make everyone think a little harder about which AI models they use and for what. If you are asking an AI for its opinion on economic policy, or immigration, or criminal justice, you are not getting a neutral answer. You are getting an answer shaped by whoever built that system and whatever data they used to build it.</p>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section>
+  <div class="container">
+    <div class="section-divider"><span>Conclusion</span></div>
+    <h2>So what did we actually learn from all of this</h2>
+    <p>We learned that AI models have political opinions, that those opinions are surprisingly consistent across most major AI families, and that the dominant political tendency in AI is center-left economically and moderately libertarian on personal freedoms. We learned that Baidu and Google make the most left-leaning models, that xAI makes the only consistently right-leaning model, and that Anthropic sits comfortably in the moderate middle.</p>
+    <p>We learned that some models express their political views with enormous confidence and some with barely any conviction at all, and that the most confident models tend to also be the most extreme. We learned that the libertarian side of the compass is much more represented than the authoritarian side, meaning AI as a category really does not like the idea of government controlling people's personal lives, even when it supports government involvement in the economy.</p>
+    <p>Most importantly, we learned that AI neutrality is a bit of a myth. These models are not blank slates. They have perspectives, and those perspectives come from somewhere. Understanding where they come from is an important part of using AI responsibly.</p>
+    <p>I hope this research was as interesting to read as it was to conduct. If you want to try the survey on a model I did not test, the full prompt is available with the tools I built for this project. Run it yourself, see where your favorite AI lands, and let me know what you find.</p>
+
+    <div class="big-stat-grid">
+      <div class="big-stat">
+        <div class="big-stat-num" style="font-size:36px; color: var(--green);">Left Lib.</div>
+        <div class="big-stat-label">AI Consensus Position</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-num accent-gold">52<span style="font-size:24px;">%</span></div>
+        <div class="big-stat-label">Models in Left Libertarian</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-num accent-red">81<span style="font-size:24px;">%</span></div>
+        <div class="big-stat-label">Max Confidence Score</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-num accent-blue">1</div>
+        <div class="big-stat-label">Right-Leaning AI Family</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="article-footer">
+  <h2>AI Political Bias Research</h2>
+  <p>Original research by StivoMix. 100 models, 100 questions, 10,000 answers. All data and methodology available for independent verification.</p>
+  <div class="tag-list">
+    <div class="tag">artificial intelligence</div>
+    <div class="tag">political bias</div>
+    <div class="tag">machine learning</div>
+    <div class="tag">large language models</div>
+    <div class="tag">political compass</div>
+    <div class="tag">AI research</div>
+    <div class="tag">ethics</div>
+    <div class="tag">openai</div>
+    <div class="tag">anthropic</div>
+    <div class="tag">grok</div>
+  </div>
+</div>
+
+<script>
+// ========== DATA ==========
+const models = [{"id":1778252871769,"name":"gemini-3-flash","x":-1.1764705882352942,"y":-1.1224489795918366,"confidence":38},{"id":1778252884005,"name":"gpt-5.2-chat-latest","x":-0.5882352941176471,"y":-2.2448979591836733,"confidence":39},{"id":1778252905119,"name":"glm-5.1","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778252913969,"name":"grok-4.20-beta1","x":3.333333333333333,"y":0.4081632653061224,"confidence":48},{"id":1778252940210,"name":"claude-sonnet-4-5-20250929","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778252971684,"name":"gemini-2.5-pro","x":-6.176470588235294,"y":-3.979591836734694,"confidence":69},{"id":1778252990585,"name":"gemini-3.1-pro-preview","x":-0.8823529411764707,"y":-1.5306122448979593,"confidence":40},{"id":1778253116177,"name":"claude-haiku-4-5-20251001","x":-1.1764705882352942,"y":-0.8163265306122448,"confidence":36},{"id":1778253125903,"name":"grok-4.20-beta-0309-reasoning","x":1.6666666666666665,"y":1.0204081632653061,"confidence":45},{"id":1778253146658,"name":"gpt-5.2-high","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778253157244,"name":"gpt-5.2","x":3.333333333333333,"y":0.4081632653061224,"confidence":48},{"id":1778253179545,"name":"gpt-5.1","x":-1.9607843137254901,"y":-2.653061224489796,"confidence":51},{"id":1778253187494,"name":"gpt-5.5-instant","x":1.1764705882352942,"y":1.326530612244898,"confidence":36},{"id":1778253203410,"name":"ernie-5.1-preview","x":-5.588235294117647,"y":-4.183673469387755,"confidence":70},{"id":1778253217047,"name":"grok-4.20-multi-agent-beta-0309","x":-5.196078431372549,"y":-6.224489795918368,"confidence":69},{"id":1778253512823,"name":"grok-4.1-thinking","x":3.9215686274509802,"y":-4.795918367346939,"confidence":78},{"id":1778253524360,"name":"claude-sonnet-4-6","x":-1.1764705882352942,"y":-0.1020408163265306,"confidence":35},{"id":1778253694131,"name":"grok-4.1","x":3.9215686274509802,"y":-4.795918367346939,"confidence":78},{"id":1778253797510,"name":"glm-5","x":-0.7843137254901961,"y":0,"confidence":33},{"id":1778253817012,"name":"gpt-5.4-mini-high","x":-3.431372549019608,"y":-2.142857142857143,"confidence":49},{"id":1778253843356,"name":"gpt-5.1-high","x":-4.019607843137255,"y":-4.081632653061225,"confidence":62},{"id":1778253856311,"name":"claude-sonnet-4-5-20250929-thinking-32k","x":-0.6862745098039216,"y":0.1020408163265306,"confidence":30},{"id":1778254091006,"name":"ernie-5.0-0110","x":-3.0392156862745097,"y":-2.9591836734693877,"confidence":56},{"id":1778254164486,"name":"gpt-5.3-chat-latest","x":-0.6862745098039216,"y":-0.2040816326530612,"confidence":36},{"id":1778254201243,"name":"mimo-v2-pro","x":-0.7843137254901961,"y":-1.2244897959183674,"confidence":39},{"id":1778254257531,"name":"glm-4.7","x":-0.5882352941176471,"y":-0.7142857142857142,"confidence":32},{"id":1778254496813,"name":"gemini-3.1-flash-lite-preview","x":0.6862745098039216,"y":0.4081632653061224,"confidence":35},{"id":1778254541215,"name":"qwen3-max-preview","x":-1.3725490196078431,"y":-0.2040816326530612,"confidence":42},{"id":1778254646591,"name":"longcat-flash-chat-2602-exp","x":-1.7647058823529413,"y":-0.4081632653061224,"confidence":40},{"id":1778254739246,"name":"gpt-5-high","x":-2.1568627450980395,"y":-0.8163265306122448,"confidence":42},{"id":1778254972644,"name":"grok-4-1-fast-reasoning","x":0.7843137254901961,"y":0.9183673469387755,"confidence":33},{"id":1778255078043,"name":"kimi-k2.5-instant","x":-2.2549019607843137,"y":-3.775510204081632,"confidence":48},{"id":1778255250265,"name":"kimi-k2-thinking-turbo","x":-0.5882352941176471,"y":0.5102040816326531,"confidence":26},{"id":1778255260252,"name":"o3-2025-04-16","x":-1.3725490196078431,"y":-1.4285714285714284,"confidence":42},{"id":1778255802401,"name":"gpt-5-chat","x":-2.2549019607843137,"y":-2.5510204081632653,"confidence":54},{"id":1778255814271,"name":"qwen3-max-2025-09-23","x":-1.9607843137254901,"y":-0.30612244897959184,"confidence":47},{"id":1778255936898,"name":"qwen3-235b-a22b-instruct-2507","x":-3.235294117647059,"y":-4.285714285714286,"confidence":65},{"id":1778256114700,"name":"kimi-k2-0905-preview","x":-2.8431372549019605,"y":-2.2448979591836733,"confidence":54},{"id":1778256147194,"name":"qwen3.5-122b-a10b","x":-2.7450980392156863,"y":-3.265306122448979,"confidence":58},{"id":1778256353529,"name":"kimi-k2-0711-preview","x":-3.5294117647058827,"y":-4.285714285714286,"confidence":63},{"id":1778256392813,"name":"qwen3-vl-235b-a22b-instruct","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778256616076,"name":"gpt-4.1-2025-04-14","x":-1.8627450980392157,"y":-3.163265306122449,"confidence":49},{"id":1778256800624,"name":"grok-4-0709","x":-0.7843137254901961,"y":-0.1020408163265306,"confidence":33},{"id":1778256812017,"name":"gemini-2.5-flash","x":-2.4509803921568625,"y":-2.5510204081632653,"confidence":55},{"id":1778256905704,"name":"mistral-medium-2508","x":-4.215686274509804,"y":-3.775510204081632,"confidence":67},{"id":1778257218672,"name":"minimax-m2.7","x":-1.0784313725490198,"y":0.2040816326530612,"confidence":33},{"id":1778257376999,"name":"qwen3.5-27b","x":-1.7647058823529413,"y":-0.6122448979591837,"confidence":37},{"id":1778257456281,"name":"grok-4-fast-reasoning","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778257476897,"name":"gpt-5.4-nano-high","x":-6.372549019607843,"y":-1.1224489795918366,"confidence":56},{"id":1778257523578,"name":"qwen3-next-80b-a3b-instruct","x":-2.3529411764705883,"y":-1.0204081632653061,"confidence":55},{"id":1778257534173,"name":"qwen3-235b-a22b-no-thinking","x":0,"y":0.4081632653061224,"confidence":30},{"id":1778258423339,"name":"longcat-flash-chat","x":-0.6862745098039216,"y":0.5102040816326531,"confidence":30},{"id":1778258444322,"name":"qwen3-235b-a22b-thinking-2507","x":-2.7450980392156863,"y":-1.4285714285714284,"confidence":55},{"id":1778258590102,"name":"claude-sonnet-4-20250514-thinking-32k","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778258596538,"name":"qwen3.5-flash","x":-4.117647058823529,"y":-4.285714285714286,"confidence":58},{"id":1778258702578,"name":"hunyuan-vision-1.5-thinking","x":-1.1764705882352942,"y":0.5102040816326531,"confidence":27},{"id":1778258724054,"name":"qwen3.5-35b-a3b","x":-2.0588235294117645,"y":-0.7142857142857142,"confidence":39},{"id":1778258867358,"name":"minimax-m2.5","x":-1.2745098039215685,"y":0.30612244897959184,"confidence":34},{"id":1778259025297,"name":"qwen3-vl-235b-a22b-thinking","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778259031762,"name":"minimax-m2.5","x":-1.2745098039215685,"y":0.30612244897959184,"confidence":34},{"id":1778259103702,"name":"mimo-v2-flash","x":-1.7647058823529413,"y":-0.7142857142857142,"confidence":35},{"id":1778259271132,"name":"step-3.5-flash","x":-3.5294117647058827,"y":-1.6326530612244896,"confidence":45},{"id":1778259360931,"name":"mimo-v2-flash (thinking)","x":-0.49019607843137253,"y":0.5102040816326531,"confidence":27},{"id":1778259410836,"name":"gpt-5-mini-high","x":-2.2549019607843137,"y":-2.2448979591836733,"confidence":45},{"id":1778259452595,"name":"claude-sonnet-4-20250514","x":-0.6862745098039216,"y":0.2040816326530612,"confidence":32},{"id":1778259482859,"name":"o4-mini-2025-04-16","x":-0.39215686274509803,"y":-0.9183673469387755,"confidence":32},{"id":1778259538405,"name":"qwen3-coder-480b-a35b-instruct","x":-3.9215686274509802,"y":-2.4489795918367347,"confidence":54},{"id":1778259668780,"name":"mistral-medium-2505","x":-0.5882352941176471,"y":0.5102040816326531,"confidence":26},{"id":1778259676985,"name":"claude-3-7-sonnet-20250219-thinking-32k","x":-1.8627450980392157,"y":-2.2448979591836733,"confidence":39},{"id":1778260057272,"name":"qwen3-30b-a3b-instruct-2507","x":-2.2549019607843137,"y":-0.8163265306122448,"confidence":54},{"id":1778260103198,"name":"minimax-m2.1-preview","x":-1.5686274509803921,"y":0,"confidence":36},{"id":1778260168196,"name":"gpt-4.1-mini-2025-04-14","x":-0.9803921568627451,"y":-0.4081632653061224,"confidence":40},{"id":1778260176672,"name":"trinity-large-thinking","x":-1.4705882352941178,"y":-3.163265306122449,"confidence":39},{"id":1778260654040,"name":"trinity-large-preview","x":-2.0588235294117645,"y":-1.326530612244898,"confidence":36},{"id":1778260679352,"name":"qwen3-235b-a22b","x":-0.5882352941176471,"y":0.5102040816326531,"confidence":26},{"id":1778260740664,"name":"claude-3-7-sonnet-20250219","x":-1.0784313725490198,"y":0.30612244897959184,"confidence":34},{"id":1778260832302,"name":"qwen3-next-80b-a3b-thinking","x":-1.5686274509803921,"y":-0.8163265306122448,"confidence":43},{"id":1778260887304,"name":"grok-3-mini-high","x":-0.49019607843137253,"y":0.2040816326530612,"confidence":27},{"id":1778260938969,"name":"minimax-m1","x":-0.29411764705882354,"y":0.4081632653061224,"confidence":27},{"id":1778260972445,"name":"gemini-2.0-flash-001","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778260983060,"name":"mistral-small-2506","x":-0.8823529411764707,"y":0.1020408163265306,"confidence":34},{"id":1778261035696,"name":"intellect-3","x":-0.5882352941176471,"y":0.30612244897959184,"confidence":30},{"id":1778261042469,"name":"grok-3-mini-beta","x":-0.7843137254901961,"y":0.30612244897959184,"confidence":30},{"id":1778261085123,"name":"gpt-oss-120b","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778261123517,"name":"mercury-2","x":-1.0784313725490198,"y":-1.326530612244898,"confidence":34},{"id":1778261129024,"name":"o3-mini","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778261218024,"name":"ling-flash-2.0","x":-0.29411764705882354,"y":0.30612244897959184,"confidence":30},{"id":1778261238972,"name":"minimax-m2","x":-0.29411764705882354,"y":0.4081632653061224,"confidence":27},{"id":1778261405390,"name":"nova-2-lite","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778261487343,"name":"gpt-5-nano-high","x":-0.29411764705882354,"y":0.4081632653061224,"confidence":26},{"id":1778261790022,"name":"qwq-32b","x":-5.980392156862745,"y":-5.1020408163265305,"confidence":81},{"id":1778261875022,"name":"qwen3-30b-a3b","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778261943409,"name":"ring-flash-2.0","x":-0.6862745098039216,"y":-0.2040816326530612,"confidence":33},{"id":1778261997455,"name":"llama-3.3-70b-instruct","x":-0.7843137254901961,"y":0.2040816326530612,"confidence":28},{"id":1778262037195,"name":"gpt-oss-20b","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778262104617,"name":"nvidia-nemotron-3-nano-30b-a3b-bf16","x":-0.4,"y":0.641025641025641,"confidence":25},{"id":1778262185374,"name":"mistral-small-3.1-24b-instruct-2503","x":-0.5882352941176471,"y":0.2040816326530612,"confidence":33},{"id":1778262249912,"name":"ibm-granite-h-small","x":-0.29411764705882354,"y":0.5102040816326531,"confidence":25},{"id":1778262562168,"name":"deepseek-v4-flash-thinking","x":-1.1764705882352942,"y":-0.6122448979591837,"confidence":36},{"id":1778262578659,"name":"deepseek-v4-pro-thinking","x":-1.7647058823529413,"y":-0.7142857142857142,"confidence":38}];
+
+// ========== TICKER ==========
+const tickerData = [
+  "100 Models Tested", "10,000 Answers", "52 Left-Libertarian", "2 Right-Libertarian",
+  "6 Right-Authoritarian", "39 Left-Authoritarian", "Avg X: -1.27", "Avg Y: -0.91",
+  "Highest Confidence: qwq-32b 81%", "Most Left: gpt-5.4-nano-high", "Most Right: grok-4.1",
+  "Most Libertarian: grok-4.20-multi-agent", "Only Right-Leaning Family: xAI"
+];
+const ticker = document.getElementById('ticker');
+const tickerContent = tickerData.map(t => `<span class="ticker-item">${t} <span class="ticker-sep">///</span></span>`).join('');
+ticker.innerHTML = tickerContent + tickerContent;
+
+// ========== COLOR HELPERS ==========
+function getModelColor(m) {
+  const name = m.name.toLowerCase();
+  if (name.includes('claude')) return { bg:'rgba(201,168,76,0.85)', border:'#c9a84c' };
+  if (name.includes('gpt')||name.includes('o3')||name.includes('o4')) return { bg:'rgba(16,132,230,0.75)', border:'#10a0e6' };
+  if (name.includes('gemini')) return { bg:'rgba(66,200,120,0.75)', border:'#42c878' };
+  if (name.includes('grok')) return { bg:'rgba(200,55,26,0.85)', border:'#c8371a' };
+  if (name.includes('qwen')||name.includes('qwq')) return { bg:'rgba(123,63,160,0.75)', border:'#7b3fa0' };
+  if (name.includes('mistral')) return { bg:'rgba(255,140,50,0.75)', border:'#ff8c32' };
+  if (name.includes('ernie')) return { bg:'rgba(255,70,70,0.75)', border:'#ff4646' };
+  return { bg:'rgba(160,170,180,0.6)', border:'#a0aab4' };
+}
+
+// ========== COMPASS CHART ==========
+(function() {
+  const ctx = document.getElementById('compassCanvas').getContext('2d');
+  const avg = { x: models.reduce((s,m)=>s+m.x,0)/models.length, y: models.reduce((s,m)=>s+m.y,0)/models.length };
+
+  const datasets = models.map(m => {
+    const c = getModelColor(m);
+    return {
+      label: m.name,
+      data: [{x: m.x, y: m.y}],
+      backgroundColor: c.bg,
+      borderColor: c.border,
+      borderWidth: 1.5,
+      pointRadius: 5,
+      pointHoverRadius: 8
+    };
+  });
+
+  datasets.push({
+    label: 'Consensus Average',
+    data: [{x: avg.x, y: avg.y}],
+    backgroundColor: '#fbbf24',
+    borderColor: '#000',
+    borderWidth: 2,
+    pointStyle: 'rectRot',
+    pointRadius: 14,
+    pointHoverRadius: 18
+  });
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(10,9,7,0.95)',
+          titleColor: '#c9a84c',
+          bodyColor: '#f7f4ef',
+          borderColor: 'rgba(247,244,239,0.1)',
+          borderWidth: 1,
+          padding: 12,
+          callbacks: {
+            title: items => items[0].dataset.label,
+            label: item => `Econ: ${item.parsed.x.toFixed(2)}   Social: ${item.parsed.y.toFixed(2)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: -8, max: 6,
+          grid: { color: 'rgba(255,255,255,0.06)', lineWidth: 1 },
+          border: { color: 'rgba(255,255,255,0.2)', width: 1.5 },
+          ticks: { color: 'rgba(247,244,239,0.4)', font: { family: 'JetBrains Mono', size: 10 }, stepSize: 2 },
+          title: { display: false }
+        },
+        y: {
+          min: -8, max: 4,
+          grid: { color: 'rgba(255,255,255,0.06)', lineWidth: 1 },
+          border: { color: 'rgba(255,255,255,0.2)', width: 1.5 },
+          ticks: { color: 'rgba(247,244,239,0.4)', font: { family: 'JetBrains Mono', size: 10 }, stepSize: 2 },
+          title: { display: false }
+        }
+      }
+    }
+  });
+})();
+
+// ========== QUADRANT PIE ==========
+(function() {
+  const ctx = document.getElementById('quadPieCanvas').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Left Libertarian (52)', 'Left Authoritarian (39)', 'Right Authoritarian (6)', 'Right Libertarian (2)'],
+      datasets: [{
+        data: [52, 39, 6, 2],
+        backgroundColor: ['#1e8a4a', '#c8371a', '#7b3fa0', '#1a6bc8'],
+        borderColor: '#0a0907',
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: 'rgba(247,244,239,0.7)', font: { family: 'JetBrains Mono', size: 10 }, padding: 16, boxWidth: 12 }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(10,9,7,0.95)',
+          titleColor: '#c9a84c',
+          bodyColor: '#f7f4ef',
+          padding: 12
+        }
+      }
+    }
+  });
+})();
+
+// ========== COMPANY BAR CHART ==========
+(function() {
+  const companies = [
+    { name: 'Baidu', x: -4.31, color: '#ff4646' },
+    { name: 'Alibaba', x: -2.09, color: '#7b3fa0' },
+    { name: 'Google', x: -1.72, color: '#42c878' },
+    { name: 'Mistral', x: -1.57, color: '#ff8c32' },
+    { name: 'OpenAI', x: -1.26, color: '#10a0e6' },
+    { name: 'Other', x: -1.18, color: '#a0aab4' },
+    { name: 'Anthropic', x: -0.91, color: '#c9a84c' },
+    { name: 'xAI', x: 0.61, color: '#c8371a' },
+  ];
+
+  const maxAbsX = 5;
+  const container = document.getElementById('companyBars');
+  companies.forEach(c => {
+    const pct = Math.abs(c.x) / maxAbsX * 50;
+    const isLeft = c.x < 0;
+    const row = document.createElement('div');
+    row.className = 'company-row';
+    row.innerHTML = `
+      <div class="company-name" style="color:${c.color}">${c.name}</div>
+      <div class="company-bar-wrap">
+        <div class="center-line"></div>
+        <div class="company-bar ${isLeft ? 'left' : 'right'}" 
+             style="width:${pct}%; background:${c.color}; opacity:0.9;">
+          ${c.x.toFixed(2)}
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  const ctx = document.getElementById('companyCanvas').getContext('2d');
+  new Chart(ctx, {
+    type: 'bubble',
+    data: {
+      datasets: companies.map(c => ({
+        label: c.name,
+        data: [{
+          x: c.x,
+          y: [
+            { name:'Baidu', y:-3.57 },
+            { name:'Alibaba', y:-1.27 },
+            { name:'Google', y:-1.38 },
+            { name:'Mistral', y:-0.74 },
+            { name:'OpenAI', y:-0.99 },
+            { name:'Other', y:-0.49 },
+            { name:'Anthropic', y:-0.19 },
+            { name:'xAI', y:-1.26 },
+          ].find(e=>e.name===c.name).y,
+          r: 14
+        }],
+        backgroundColor: c.color + 'cc',
+        borderColor: c.color,
+        borderWidth: 2
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 2,
+      plugins: {
+        legend: { labels: { color: 'rgba(247,244,239,0.7)', font: { family:'JetBrains Mono', size:10 }, padding:12, boxWidth:12 } },
+        tooltip: {
+          backgroundColor: 'rgba(10,9,7,0.95)',
+          titleColor: '#c9a84c',
+          bodyColor: '#f7f4ef',
+          padding: 12,
+          callbacks: {
+            title: items => items[0].dataset.label,
+            label: item => `Econ: ${item.parsed.x.toFixed(2)}   Social: ${item.parsed.y.toFixed(2)}`
+          }
+        }
+      },
+      scales: {
+        x: { min: -6, max: 3, grid: { color:'rgba(255,255,255,0.06)' }, ticks:{color:'rgba(247,244,239,0.4)',font:{family:'JetBrains Mono',size:10}}, border:{color:'rgba(255,255,255,0.2)'}, title:{display:true,text:'Economic Axis',color:'rgba(247,244,239,0.4)',font:{family:'JetBrains Mono',size:10}} },
+        y: { min: -5, max: 1, grid: { color:'rgba(255,255,255,0.06)' }, ticks:{color:'rgba(247,244,239,0.4)',font:{family:'JetBrains Mono',size:10}}, border:{color:'rgba(255,255,255,0.2)'}, title:{display:true,text:'Social Axis',color:'rgba(247,244,239,0.4)',font:{family:'JetBrains Mono',size:10}} }
+      }
+    }
+  });
+})();
+
+// ========== CONFIDENCE BARS ==========
+(function() {
+  const sorted = [...models].sort((a,b)=>b.confidence-a.confidence).slice(0,20);
+  const container = document.getElementById('confBars');
+  sorted.forEach(m => {
+    const pct = m.confidence;
+    const c = getModelColor(m);
+    const row = document.createElement('div');
+    row.className = 'conf-bar-item';
+    row.innerHTML = `
+      <div class="conf-name">${m.name}</div>
+      <div class="conf-track">
+        <div class="conf-fill" style="width:${pct}%; background: linear-gradient(90deg, ${c.border}aa, ${c.border});"></div>
+      </div>
+      <div class="conf-val">${pct}%</div>
+    `;
+    container.appendChild(row);
+  });
+})();
+</script>
+</body>
+</html>
